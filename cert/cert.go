@@ -148,15 +148,16 @@ func (ca *CA) load() error {
 		return fmt.Errorf("%v 中不存在 CERTIFICATE", caFile)
 	}
 
-	key, err := x509.ParsePKCS8PrivateKey(keyDERBlock.Bytes)
+	key, err := x509.ParsePKCS1PrivateKey(keyDERBlock.Bytes)
 	if err != nil {
 		return err
 	}
-	if v, ok := key.(*rsa.PrivateKey); ok {
-		ca.PrivateKey = *v
-	} else {
-		return errors.New("found unknown rsa private key type in PKCS#8 wrapping")
-	}
+	ca.PrivateKey = *key
+	// if v, ok := key.(*rsa.PrivateKey); ok {
+	// 	ca.PrivateKey = *v
+	// } else {
+	// 	return errors.New("found unknown rsa private key type in PKCS#8 wrapping")
+	// }
 
 	x509Cert, err := x509.ParseCertificate(certDERBlock.Bytes)
 	if err != nil {
